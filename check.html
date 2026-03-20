@@ -93,16 +93,26 @@
                 return;
             }
 
-            const storedData = localStorage.getItem("booking");
-            if (!storedData) {
-                showNoBooking();
-                return;
-            }
+            // Check bookings array (new format)
+            const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+            // Check single booking (old format fallback)
+            const singleBooking = JSON.parse(localStorage.getItem("booking") || "null");
 
-            const booking = JSON.parse(storedData);
+            // Combine for searching
+            let allBookings = [...bookings];
+            if (singleBooking) allBookings.push(singleBooking);
 
-            if (inputVal === booking.whatsapp) {
-                showBookingDetails(booking);
+            // Find the most recent booking for this number
+            const userBooking = allBookings
+                .filter(b => b.whatsapp === inputVal)
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+
+            if (userBooking) {
+                showBookingDetails(userBooking);
+                // Scroll to result
+                setTimeout(() => {
+                    output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             } else {
                 showNoBooking();
             }
@@ -130,7 +140,7 @@
                             </div>
                             <div class="text-end">
                                 <p class="text-muted small mb-0">Reference</p>
-                                <span class="fw-mono">#${Math.random().toString(36).substr(2, 6).toUpperCase()}</span>
+                                <span class="fw-mono">#${booking.id || 'N/A'}</span>
                             </div>
                         </div>
                         <div class="row mb-4">

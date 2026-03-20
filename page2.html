@@ -106,8 +106,6 @@
     </div>
 
     <script>
-        const selectedServicesList = document.getElementById("selected-services-list");
-        const totalPriceEl = document.getElementById("total-price");
         const bookingForm = document.getElementById("booking-form");
 
         function displaySelectedServices() {
@@ -146,25 +144,37 @@
 
             const date = document.getElementById("date").value;
             const time = document.getElementById("Time").value;
-            const whatsapp = document.getElementById("input").value;
+            const whatsapp = document.getElementById("input").value.trim();
 
-            if (selected.length === 0) {
-                alert("Please select at least one service.");
+            const selectedServices = JSON.parse(localStorage.getItem("selectedservices") || "[]");
+
+            if (selectedServices.length === 0) {
+                alert("Please select at least one service first.");
                 window.location.href = "service.html";
                 return;
             }
 
+            if (!whatsapp) {
+                alert("Please enter a valid WhatsApp number.");
+                return;
+            }
+
             const bookingData = {
-                services: selected,
+                id: 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                services: selectedServices,
                 date: date,
                 time: time,
                 whatsapp: whatsapp,
-                status: "confirmed", // Changed to confirmed for demo purposes
+                status: "confirmed",
                 timestamp: new Date().toISOString()
             };
 
-            // Currently overwrites existing booking for this demo
-            localStorage.setItem("booking", JSON.stringify(bookingData));
+            // Support multiple bookings
+            const existingBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+            existingBookings.push(bookingData);
+            
+            localStorage.setItem("bookings", JSON.stringify(existingBookings));
+            localStorage.setItem("booking", JSON.stringify(bookingData)); // Also keep 'booking' for backward compatibility
             
             // Clear selection after booking
             localStorage.removeItem("selectedservices");
@@ -176,9 +186,10 @@
         displaySelectedServices();
 
         // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').setAttribute('min', today);
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('date').setAttribute('min', todayStr);
     </script>
+
 </body>
 
 </html>
