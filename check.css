@@ -1,0 +1,26 @@
+/* Check Booking Page Specific Styles */
+.search-card {
+    border-radius: var(--border-radius-lg);
+}
+
+.booking-result-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.status-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+}
+
+.back-home-btn {
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.back-home-btn:hover {
+    color: var(--primary);
+}
